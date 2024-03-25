@@ -29,11 +29,11 @@ export class Graph {
     reward: number = 1.0,
     utility: number = 0.0,
     terminal: boolean = false,
-    neighbors: Set<string> | null = null
+    neighbors: string[] | null = null
   ) {
     assert(!(node_name in this.nodes));
     if (neighbors == null) {
-      neighbors = new Set<string>();
+      neighbors = [];
     }
     this.nodes[node_name] = new Node(node_name, reward, utility, terminal, neighbors);
   }
@@ -71,7 +71,7 @@ export class Graph {
     delete this.nodes[node_name];
   }
 
-  get_edge(src_name: string, tgt_name: string): Edge {
+  getEdge(src_name: string, tgt_name: string): Edge {
     return this.edges[`${src_name},${tgt_name}`];
   }
 
@@ -84,10 +84,11 @@ export class Graph {
     assert(edge.src in this.nodes);
     assert(edge.tgt in this.nodes);
     assert(!(`${edge.src},${edge.tgt}` in this.edges));
+
     this.edges[`${edge.src},${edge.tgt}`] = edge;
     const neighbors = this.nodes[edge.src].neighbors;
-    if (!neighbors.has(edge.tgt)) {
-      neighbors.add(edge.tgt);
+    if (!neighbors.includes(edge.tgt)) {
+      neighbors.push(edge.tgt);
     }
   }
 
@@ -98,15 +99,19 @@ export class Graph {
     this.add_edge(new Edge(src_name, tgt_name, p));
   }
 
+  // THis will break if there is an error, on purpose.
   remove_edge(src_node: string, tgt_node: string) {
     assert(src_node in this.nodes);
     assert(tgt_node in this.nodes);
     assert(`${src_node},${tgt_node}` in this.edges);
-    this.neighbors(src_node).delete(tgt_node);
+
+    const src = this.nodes[src_node];
+    const index = src_node.indexOf(tgt_node);
+    src.neighbors.splice(index, 1);
     delete this.edges[`${src_node},${tgt_node}`];
   }
 
-  neighbors(node_name: string): Set<string> {
+  neighbors(node_name: string): string[] {
     return this.nodes[node_name].neighbors;
   }
 
@@ -125,18 +130,18 @@ export class Graph {
   }
 
   is_terminal(node_name: string): boolean {
-    return this.nodes[node_name].is_terminal;
+    return this.nodes[node_name].isTerminal;
   }
 
-  map_nodes(func: (node: Node) => void) {
+  map_nodes(lambda: (node: Node) => void) {
     for (const n of Object.values(this.nodes)) {
-      func(n);
+      lambda(n);
     }
   }
 
-  map_edges(func: (edge: Edge) => void) {
+  map_edges(lambda: (edge: Edge) => void) {
     for (const e of Object.values(this.edges)) {
-      func(e);
+      lambda(e);
     }
   }
 }

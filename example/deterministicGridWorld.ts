@@ -63,16 +63,35 @@ G.addDefaultEdge('2,2', '3,2');
 G.addDefaultEdge('2,2', '2,1');
 
 // ---------- Example of Policies ---------- 
-function printPolicyResults(policy: Policy, name: string) {
-  const [_steps, rewards] = runPolicy(G, '0,0', policy, 10);
+function displayUtilities(G: Graph) {
+  for (let y = 2; y >= 0; --y) {
+    let str = "";
+    for (let x = 0; x < 4; ++x) {
+      const key = `${x},${y}`;
+
+      if (key in G.nodes) {
+        str += `${G.nodes[key].utility.toFixed(3)} `;
+      } else {
+        str += "       ";
+      }
+    }
+
+    console.log(str);
+  }
+}
+function printPolicyResults(policy: Policy, name: string, displayUTable: boolean) {
+  const [steps, rewards] = runPolicy(G, '0,0', policy, 10);
   console.log(`${name}: ${rewards.reduce((a, b) => a + b)}`);
-  console.log(policy);
+
+  if (displayUTable) {
+    displayUtilities(G);
+  }
+
   console.log('\n\n');
 }
 
-printPolicyResults(greedyPolicy(G), 'Greedy');
-printPolicyResults(randomPolicy(G), 'Random');
-printPolicyResults(policyIteration(G, 0.6), 'Policy Iteration');
-printPolicyResults(valueIteration(G, 100, 0.8, 0.0000000001), 'Valute Iteration');
 
-
+printPolicyResults(greedyPolicy(G), 'Greedy', false);
+printPolicyResults(randomPolicy(G), 'Random', false);
+printPolicyResults(policyIteration(G, 1.0), 'Policy Iteration', true);
+printPolicyResults(valueIteration(G, 100, 1.0, 0.0000000001), 'Valute Iteration', true);

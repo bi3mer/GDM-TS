@@ -1,5 +1,6 @@
 
 import { Graph } from "../Graph/graph";
+import type { Policy } from "../policy";
 import { resetUtility, createPolicy, calculateMaxUtility } from "../util";
 
 export function __in_place_value_iteration(G: Graph, max_iteration: number, gamma: number, theta: number): void {
@@ -36,8 +37,13 @@ export function __value_iteration(G: Graph, max_iteration: number, gamma: number
 }
 
 export function value_iteration(
-  G: Graph, max_iteration: number, gamma: number, theta: number,
-  in_place: boolean = false, should_reset_utility: boolean = true): { [key: string]: string } {
+  G: Graph,
+  max_iteration: number,
+  gamma: number,
+  theta: number,
+  in_place: boolean = false,
+  should_reset_utility: boolean = true
+): Policy {
   if (should_reset_utility) {
     resetUtility(G);
   }
@@ -46,6 +52,7 @@ export function value_iteration(
   } else {
     __value_iteration(G, max_iteration, gamma, theta);
   }
+
   return createPolicy(G, gamma);
 }
 

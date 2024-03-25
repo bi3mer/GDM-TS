@@ -41,6 +41,7 @@ function policyEvaluation(G: Graph, _: any, gamma: number, policyK: number): voi
     for (const n in G.nodes) {
       uTemp[n] = calculateMaxUtility(G, n, gamma);
     }
+
     G.setNodeUtilities(uTemp);
   }
 }
@@ -72,7 +73,14 @@ function policyImprovement(G: Graph, pi: Policy, gamma: number): boolean {
   return changed;
 }
 
-export function policyIteration(G: Graph, gamma: number, modified: boolean = false, inPlace: boolean = false, policyK: number = 10, shouldResetUtility: boolean = true): Policy {
+export function policyIteration(
+  G: Graph,
+  gamma: number,
+  modified: boolean = false,
+  inPlace: boolean = false,
+  policyK: number = 10,
+  shouldResetUtility: boolean = true
+): Policy {
   if (shouldResetUtility) {
     resetUtility(G);
   }
@@ -90,11 +98,10 @@ export function policyIteration(G: Graph, gamma: number, modified: boolean = fal
     policyEval = policyEvaluation;
   }
 
-  while (true) {
+  let loop: boolean = true;
+  while (loop) {
     policyEval(G, pi, gamma, policyK);
-    if (!policyImprovement(G, pi, gamma)) {
-      break;
-    }
+    loop = policyImprovement(G, pi, gamma);
   }
 
   policyEval(G, pi, gamma, policyK);

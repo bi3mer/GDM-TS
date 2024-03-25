@@ -10,47 +10,43 @@ export class Graph {
     this.edges = {};
   }
 
-  get_node(node_name: string): Node {
-    return this.nodes[node_name];
+  getNode(nodeName: string): Node {
+    return this.nodes[nodeName];
   }
 
-  has_node(node_name: string): boolean {
-    return node_name in this.nodes;
+  hasNode(nodeName: string): boolean {
+    return nodeName in this.nodes;
   }
 
-  add_node(node: Node) {
-    assert(node instanceof Node);
-    assert(!(node.name in this.nodes));
+  addNode(node: Node) {
     this.nodes[node.name] = node;
   }
 
-  add_default_node(
-    node_name: string,
+  addDefaultNode(
+    nodeName: string,
     reward: number = 1.0,
     utility: number = 0.0,
     terminal: boolean = false,
     neighbors: string[] | null = null
   ) {
-    assert(!(node_name in this.nodes));
     if (neighbors == null) {
       neighbors = [];
     }
-    this.nodes[node_name] = new Node(node_name, reward, utility, terminal, neighbors);
+    this.nodes[nodeName] = new Node(nodeName, reward, utility, terminal, neighbors);
   }
 
-  remove_node(node_name: string) {
-    assert(node_name in this.nodes);
-    const edges_to_remove: Edge[] = [];
+  removeNode(nodeName: string) {
+    const edgesToRemove: Edge[] = [];
     for (const e of Object.values(this.edges)) {
-      if (e.src == node_name || e.tgt == node_name) {
-        edges_to_remove.push(e);
+      if (e.src == nodeName || e.tgt == nodeName) {
+        edgesToRemove.push(e);
       }
 
       const probabilities = e.probability;
       let index = -1;
       for (let i = 0; i < probabilities.length; i++) {
         const [name, _] = probabilities[i];
-        if (name == node_name) {
+        if (name == nodeName) {
           index = i;
           break;
         }
@@ -59,32 +55,27 @@ export class Graph {
         continue;
       }
 
-      const p_value = probabilities[index][1];
+      const pValue = probabilities[index][1];
       probabilities.splice(index, 1);
       const len = probabilities.length;
-      const p_value_new = p_value / len;
-      e.probability = probabilities.map(([name, p]) => [name, p + p_value_new]);
+      const pValueNew = pValue / len;
+      e.probability = probabilities.map(([name, p]) => [name, p + pValueNew]);
     }
-    for (const e of edges_to_remove) {
-      this.remove_edge(e.src, e.tgt);
+    for (const e of edgesToRemove) {
+      this.removeEdge(e.src, e.tgt);
     }
-    delete this.nodes[node_name];
+    delete this.nodes[nodeName];
   }
 
-  getEdge(src_name: string, tgt_name: string): Edge {
-    return this.edges[`${src_name},${tgt_name}`];
+  getEdge(srcName: string, tgtName: string): Edge {
+    return this.edges[`${srcName},${tgtName}`];
   }
 
-  has_edge(src_name: string, tgt_name: string): boolean {
-    return `${src_name},${tgt_name}` in this.edges;
+  hasEdge(srcName: string, tgtName: string): boolean {
+    return `${srcName},${tgtName}` in this.edges;
   }
 
-  add_edge(edge: Edge) {
-    assert(edge instanceof Edge);
-    assert(edge.src in this.nodes);
-    assert(edge.tgt in this.nodes);
-    assert(!(`${edge.src},${edge.tgt}` in this.edges));
-
+  addEdge(edge: Edge) {
     this.edges[`${edge.src},${edge.tgt}`] = edge;
     const neighbors = this.nodes[edge.src].neighbors;
     if (!neighbors.includes(edge.tgt)) {
@@ -92,54 +83,50 @@ export class Graph {
     }
   }
 
-  add_default_edge(src_name: string, tgt_name: string, p: [string, number][] | null = null) {
+  addDefaultEdge(srcName: string, tgtName: string, p: [string, number][] | null = null) {
     if (p == null) {
-      p = [];
+      p = [[tgtName, 1.0]];
     }
-    this.add_edge(new Edge(src_name, tgt_name, p));
+    this.addEdge(new Edge(srcName, tgtName, p));
   }
 
   // THis will break if there is an error, on purpose.
-  remove_edge(src_node: string, tgt_node: string) {
-    assert(src_node in this.nodes);
-    assert(tgt_node in this.nodes);
-    assert(`${src_node},${tgt_node}` in this.edges);
-
-    const src = this.nodes[src_node];
-    const index = src_node.indexOf(tgt_node);
+  removeEdge(srcNode: string, tgtNode: string) {
+    const src = this.nodes[srcNode];
+    const index = srcNode.indexOf(tgtNode);
     src.neighbors.splice(index, 1);
-    delete this.edges[`${src_node},${tgt_node}`];
+    delete this.edges[`${srcNode},${tgtNode}`];
   }
 
-  neighbors(node_name: string): string[] {
-    return this.nodes[node_name].neighbors;
+  neighbors(nodeName: string): string[] {
+    return this.nodes[nodeName].neighbors;
   }
 
-  set_node_utilities(utilities: { [key: string]: number }) {
-    for (const [node_name, utility] of Object.entries(utilities)) {
-      this.nodes[node_name].utility = utility;
+  setNodeUtilities(utilities: { [key: string]: number }) {
+    for (const [nodeName, utility] of Object.entries(utilities)) {
+      this.nodes[nodeName].utility = utility;
     }
   }
 
-  utility(node_name: string): number {
-    return this.nodes[node_name].utility;
+  utility(nodeName: string): number {
+    return this.nodes[nodeName].utility;
   }
 
-  reward(node_name: string): number {
-    return this.nodes[node_name].reward;
+  reward(nodeName: string): number {
+    return this.nodes[nodeName].reward;
   }
 
-  is_terminal(node_name: string): boolean {
-    return this.nodes[node_name].isTerminal;
+  isTerminal(nodeName: string): boolean {
+    return this.nodes[nodeName].isTerminal;
   }
 
-  map_nodes(lambda: (node: Node) => void) {
+  mapNodes(lambda: (node: Node) => void) {
     for (const n of Object.values(this.nodes)) {
       lambda(n);
     }
   }
 
-  map_edges(lambda: (edge: Edge) => void) {
+  mapEdges(lambda: (edge: Edge) => void) {
     for (const e of Object.values(this.edges)) {
       lambda(e);
     }

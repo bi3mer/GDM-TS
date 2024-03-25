@@ -4,99 +4,102 @@ import type { Policy } from "../policy";
 import { calculateUtility, calculateMaxUtility, createRandomPolicy, resetUtility } from "../util";
 
 
-function modified_in_place_policy_evaluation(G: Graph, pi: Policy, gamma: number, policy_k: number): void {
-  for (let __ = 0; __ < policy_k; __++) {
+function modifiedInPlacePolicyEvaluation(G: Graph, pi: Policy, gamma: number, policyK: number): void {
+  for (let i = 0; i < policyK; ++i) {
     for (const n in G.nodes) {
-      const node = G.get_node(n);
-      if (node.is_terminal) {
-        continue;
+      const node = G.getNode(n);
+      if (!node.isTerminal) {
+        node.utility = calculateUtility(G, n, pi[n], gamma);
       }
-      node.utility = calculateUtility(G, n, pi[n], gamma);
     }
   }
 }
 
-function modified_policy_evaluation(G: Graph, pi: Policy, gamma: number, policy_k: number): void {
-  for (let __ = 0; __ < policy_k; __++) {
-    const u_temp: Record<string, number> = {};
+function modifiedPolicyEvaluation(G: Graph, pi: Policy, gamma: number, policyK: number): void {
+  for (let i = 0; i < policyK; ++i) {
+    const uTemp: Record<string, number> = {};
     for (const n in G.nodes) {
-      if (G.get_node(n).is_terminal) {
-        continue;
+      if (!G.getNode(n).isTerminal) {
+        uTemp[n] = calculateUtility(G, n, pi[n], gamma);
       }
-      u_temp[n] = calculateUtility(G, n, pi[n], gamma);
     }
-    G.set_node_utilities(u_temp);
+    G.setNodeUtilities(uTemp);
   }
 }
 
-function in_place_policy_evaluation(G: Graph, _: any, gamma: number, policy_k: number): void {
-  for (let __ = 0; __ < policy_k; __++) {
+function inPlacePolicyEvaluation(G: Graph, _: any, gamma: number, policyK: number): void {
+  for (let i = 0; i < policyK; ++i) {
     for (const n in G.nodes) {
-      G.get_node(n).utility = calculateMaxUtility(G, n, gamma);
+      G.getNode(n).utility = calculateMaxUtility(G, n, gamma);
     }
   }
 }
 
-function policy_evaluation(G: Graph, _: any, gamma: number, policy_k: number): void {
-  for (let i = 0; i < policy_k; i++) {
-    const u_temp: { [key: string]: number } = {};
+function policyEvaluation(G: Graph, _: any, gamma: number, policyK: number): void {
+  for (let i = 0; i < policyK; ++i) {
+    const uTemp: { [key: string]: number } = {};
     for (const n in G.nodes) {
-      u_temp[n] = calculateMaxUtility(G, n, gamma);
+      uTemp[n] = calculateMaxUtility(G, n, gamma);
     }
-    G.set_node_utilities(u_temp);
+    G.setNodeUtilities(uTemp);
   }
 }
 
-function policy_improvement(G: Graph, pi: Policy, gamma: number): boolean {
+function policyImprovement(G: Graph, pi: Policy, gamma: number): boolean {
   let changed = false;
   for (const n in G.nodes) {
-    if (G.get_node(n).is_terminal) {
+    if (G.getNode(n).isTerminal) {
       continue;
     }
-    let best_s: string | null = null;
-    let best_u = -Infinity;
-    for (const n_p of G.neighbors(n)) {
-      const u_p = calculateUtility(G, n, n_p, gamma);
-      if (u_p > best_u) {
-        best_s = n_p;
-        best_u = u_p;
+
+    let bestS: string | null = null;
+    let bestU = -Infinity;
+
+    for (const np of G.neighbors(n)) {
+      const up = calculateUtility(G, n, np, gamma);
+      if (up > bestU) {
+        bestS = np;
+        bestU = up;
       }
     }
-    if (pi[n] !== best_s) {
-      pi[n] = best_s;
+
+    if (pi[n] !== bestS) {
+      pi[n] = bestS!;
       changed = true;
     }
   }
+
   return changed;
 }
 
-function policy_iteration(G: Graph, gamma: number, modified: boolean = false, in_place: boolean = false, policy_k: number = 10, should_reset_utility: boolean = true): Policy {
-  if (should_reset_utility) {
+export function policyIteration(G: Graph, gamma: number, modified: boolean = false, inPlace: boolean = false, policyK: number = 10, shouldResetUtility: boolean = true): Policy {
+  if (shouldResetUtility) {
     resetUtility(G);
   }
 
   const pi: Policy = createRandomPolicy(G);
+  let policyEval: (G: Graph, pi: Policy, gamma: number, policyK: number) => void;
 
-  let policy_eval: (G: Graph, pi: Policy, gamma: number, policy_k: number) => void;
-
-  if (modified && in_place) {
-    policy_eval = modified_in_place_policy_evaluation;
-  } else if (modified && !in_place) {
-    policy_eval = modified_policy_evaluation;
-  } else if (!modified && in_place) {
-    policy_eval = in_place_policy_evaluation;
+  if (modified && inPlace) {
+    policyEval = modifiedInPlacePolicyEvaluation;
+  } else if (modified && !inPlace) {
+    policyEval = modifiedPolicyEvaluation;
+  } else if (!modified && inPlace) {
+    policyEval = inPlacePolicyEvaluation;
   } else {
-    policy_eval = policy_evaluation;
+    policyEval = policyEvaluation;
   }
 
   while (true) {
-    policy_eval(G, pi, gamma, policy_k);
-    if (!policy_improvement(G, pi, gamma)) {
+    policyEval(G, pi, gamma, policyK);
+    if (!policyImprovement(G, pi, gamma)) {
       break;
     }
   }
-  policy_eval(G, pi, gamma, policy_k);
-  policy_improvement(G, pi, gamma);
+
+  policyEval(G, pi, gamma, policyK);
+  policyImprovement(G, pi, gamma);
+
   return pi;
 }
 

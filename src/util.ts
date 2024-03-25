@@ -16,8 +16,8 @@ export function calculateUtility(G: Graph, src: string, tgt: string, gamma: numb
 }
 
 export function calculateMaxUtility(G: Graph, n: string, gamma: number): number {
-  const node = G.get_node(n);
-  if (node.is_terminal) {
+  const node = G.getNode(n);
+  if (node.isTerminal) {
     return 0;
   }
 
@@ -41,7 +41,7 @@ export function resetUtility(G: Graph): void {
 export function createRandomPolicy(G: Graph): Policy {
   const pi: { [n: string]: string } = {};
   for (const n in G.nodes) {
-    if (!G.get_node(n).is_terminal) {
+    if (!G.getNode(n).isTerminal) {
       pi[n] = choice(G.neighbors(n));
     }
   }
@@ -51,51 +51,51 @@ export function createRandomPolicy(G: Graph): Policy {
 export function createPolicy(G: Graph, gamma: number): Policy {
   const pi: Policy = {};
   for (const n in G.nodes) {
-    if (G.get_node(n).is_terminal) {
+    if (G.getNode(n).isTerminal) {
       continue;
     }
 
-    let best_u = -Infinity;
-    let best_n: string = "";
+    let bestU = -Infinity;
+    let bestN: string = "";
 
-    for (const n_p of G.neighbors(n)) {
-      const u = calculateUtility(G, n, n_p, gamma);
-      if (u > best_u) {
-        best_u = u;
-        best_n = n_p;
+    for (const np of G.neighbors(n)) {
+      const u = calculateUtility(G, n, np, gamma);
+      if (u > bestU) {
+        bestU = u;
+        bestN = np;
       }
     }
 
-    pi[n] = best_n;
+    pi[n] = bestN;
   }
 
   return pi;
 }
 
-export function runPolicy(G: Graph, start: string, pi: Policy, max_steps: number): [string[], number[]] {
+export function runPolicy(G: Graph, start: string, pi: Policy, maxSteps: number): [string[], number[]] {
   const states: string[] = [start];
   const rewards: number[] = [G.nodes[start].reward];
-  let cur_state = start;
-  for (let i = 0; i < max_steps; i++) {
-    if (G.nodes[cur_state].is_terminal) {
+  let curState = start;
+  for (let i = 0; i < maxSteps; i++) {
+    if (G.nodes[curState].isTerminal) {
       break;
     }
 
-    let tgt_state = pi[cur_state];
+    let tgtState = pi[curState];
     let p = Math.random();
 
-    for (const [next_state, probability] of G.getEdge(cur_state, tgt_state).probability) {
+    for (const [nextState, probability] of G.getEdge(curState, tgtState).probability) {
       if (p <= probability) {
-        tgt_state = next_state;
+        tgtState = nextState;
         break;
       } else {
         p -= probability;
       }
     }
 
-    states.push(tgt_state);
-    rewards.push(G.nodes[tgt_state].reward);
-    cur_state = tgt_state;
+    states.push(tgtState);
+    rewards.push(G.nodes[tgtState].reward);
+    curState = tgtState;
   }
 
   return [states, rewards];

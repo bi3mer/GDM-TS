@@ -5,8 +5,8 @@ import { resetUtility, createPolicy, calculateMaxUtility } from "../util";
 export function __in_place_value_iteration(G: Graph, max_iteration: number, gamma: number, theta: number): void {
   for (let k = 0; k < max_iteration; k++) {
     let delta = 0;
-    for (const n of G.nodes) {
-      const node = G.get_node(n);
+    for (const n in G.nodes) {
+      const node = G.getNode(n);
       const u = calculateMaxUtility(G, n, gamma);
       delta = Math.max(delta, Math.abs(node.utility - u));
       node.utility = u;
@@ -23,12 +23,12 @@ export function __value_iteration(G: Graph, max_iteration: number, gamma: number
   for (let _ = 0; _ < max_iteration; _++) {
     let delta = 0;
     const u_temp: { [key: string]: number } = {};
-    for (const n of G.nodes) {
+    for (const n in G.nodes) {
       const u = calculateMaxUtility(G, n, gamma);
       delta = Math.max(delta, Math.abs(G.utility(n) - u));
       u_temp[n] = u;
     }
-    G.set_node_utilities(u_temp);
+    G.setNodeUtilities(u_temp);
     if (delta < theta) {
       break;
     }

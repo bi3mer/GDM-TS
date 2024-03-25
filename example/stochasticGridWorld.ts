@@ -36,35 +36,35 @@ G.addDefaultNode('3,2', 1, 0, true, []);
 
 // ---------- Edges ---------- 
 // bot row
-G.addDefaultEdge('0,0', '1,0');
-G.addDefaultEdge('0,0', '0,1');
-G.addDefaultEdge('1,0', '0,0');
-G.addDefaultEdge('1,0', '2,0');
-G.addDefaultEdge('2,0', '1,0');
-G.addDefaultEdge('2,0', '3,0');
-G.addDefaultEdge('2,0', '2,1');
-G.addDefaultEdge('3,0', '2,0');
-G.addDefaultEdge('3,0', '3,1');
+G.addDefaultEdge('0,0', '1,0', [['1,0', 0.8], ['0,1', 0.2]]);
+G.addDefaultEdge('0,0', '0,1', [['0,1', 0.8], ['1,0', 0.2]]);
+G.addDefaultEdge('1,0', '0,0', [['0,0', 0.8], ['2,0', 0.2]]);
+G.addDefaultEdge('1,0', '2,0', [['2,0', 0.8], ['0,0', 0.2]]);
+G.addDefaultEdge('2,0', '1,0', [['1,0', 0.8], ['2,1', 0.2]]);
+G.addDefaultEdge('2,0', '3,0', [['3,0', 0.8], ['2,1', 0.2]]);
+G.addDefaultEdge('2,0', '2,1', [['2,1', 0.8], ['1,0', 0.1], ['3,0', 0.1]]);
+G.addDefaultEdge('3,0', '2,0', [['2,0', 0.8], ['3,1', 0.2]]);
+G.addDefaultEdge('3,0', '3,1', [['3,1', 0.8], ['2,0', 0.2]]);
 
 // mid row
-G.addDefaultEdge('0,1', '0,0');
-G.addDefaultEdge('0,1', '0,2');
-G.addDefaultEdge('2,1', '2,2');
-G.addDefaultEdge('2,1', '3,1');
-G.addDefaultEdge('2,1', '2,0');
+G.addDefaultEdge('0,1', '0,0', [['0,0', 0.8], ['1,0', 0.2]]);
+G.addDefaultEdge('0,1', '0,2', [['0,2', 0.8], ['0,0', 0.2]]);
+G.addDefaultEdge('2,1', '2,2', [['2,2', 0.8], ['3,1', 0.1], ['2,0', 0.1]]);
+G.addDefaultEdge('2,1', '3,1', [['3,1', 0.8], ['2,2', 0.1], ['2,0', 0.1]]);
+G.addDefaultEdge('2,1', '2,0', [['2,0', 0.8], ['2,2', 0.1], ['3,1', 0.1]]);
 
 // top row
-G.addDefaultEdge('0,2', '0,1');
-G.addDefaultEdge('0,2', '1,2');
-G.addDefaultEdge('1,2', '0,2');
-G.addDefaultEdge('1,2', '2,2');
-G.addDefaultEdge('2,2', '1,2');
-G.addDefaultEdge('2,2', '3,2');
-G.addDefaultEdge('2,2', '2,1');
+G.addDefaultEdge('0,2', '0,1', [['0,1', 0.8], ['1,2', 0.2]]);
+G.addDefaultEdge('0,2', '1,2', [['1,2', 0.8], ['0,1', 0.2]]);
+G.addDefaultEdge('1,2', '0,2', [['0,2', 0.8], ['2,2', 0.2]]);
+G.addDefaultEdge('1,2', '2,2', [['2,2', 0.8], ['0,2', 0.2]]);
+G.addDefaultEdge('2,2', '1,2', [['1,2', 0.8], ['3,2', 0.1], ['2,1', 0.1]]);
+G.addDefaultEdge('2,2', '3,2', [['3,2', 0.8], ['1,2', 0.1], ['2,1', 0.1]]);
+G.addDefaultEdge('2,2', '2,1', [['2,1', 0.8], ['1,2', 0.1], ['3,2', 0.1]]);
 
 // ---------- Example of Policies ---------- 
 function printPolicyResults(policy: Policy, name: string) {
-  const [_steps, rewards] = runPolicy(G, '0,0', policy, 10);
+  const [steps, rewards] = runPolicy(G, '0,0', policy, 10);
   console.log(`${name}: ${rewards.reduce((a, b) => a + b)}`);
   console.log(policy);
   console.log('\n\n');

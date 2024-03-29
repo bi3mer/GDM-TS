@@ -3,7 +3,7 @@ import { Graph } from "../Graph/graph";
 import type { Policy } from "../policy";
 import { resetUtility, createPolicy, calculateMaxUtility } from "../util";
 
-export function __in_place_value_iteration(G: Graph, max_iteration: number, gamma: number, theta: number): void {
+function __inPlaceValueIteration(G: Graph, max_iteration: number, gamma: number, theta: number): void {
   for (let k = 0; k < max_iteration; k++) {
     let delta = 0;
     for (const n in G.nodes) {
@@ -20,7 +20,7 @@ export function __in_place_value_iteration(G: Graph, max_iteration: number, gamm
   console.log(`${max_iteration} iterations to converge.`);
 }
 
-export function __value_iteration(G: Graph, max_iteration: number, gamma: number, theta: number): void {
+function __valueIteration(G: Graph, max_iteration: number, gamma: number, theta: number): void {
   for (let _ = 0; _ < max_iteration; _++) {
     let delta = 0;
     const u_temp: { [key: string]: number } = {};
@@ -36,21 +36,21 @@ export function __value_iteration(G: Graph, max_iteration: number, gamma: number
   }
 }
 
-export function value_iteration(
+export function valueIteration(
   G: Graph,
   max_iteration: number,
   gamma: number,
   theta: number,
-  in_place: boolean = false,
-  should_reset_utility: boolean = true
+  inPlace: boolean = false,
+  shouldResetUtility: boolean = true
 ): Policy {
-  if (should_reset_utility) {
+  if (shouldResetUtility) {
     resetUtility(G);
   }
-  if (in_place) {
-    __in_place_value_iteration(G, max_iteration, gamma, theta);
+  if (inPlace) {
+    __inPlaceValueIteration(G, max_iteration, gamma, theta);
   } else {
-    __value_iteration(G, max_iteration, gamma, theta);
+    __valueIteration(G, max_iteration, gamma, theta);
   }
 
   return createPolicy(G, gamma);

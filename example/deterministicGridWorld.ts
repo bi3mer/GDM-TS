@@ -1,5 +1,5 @@
 import { policyIteration } from "../src/ADP/policyIteration";
-import { value_iteration as valueIteration } from "../src/ADP/valueIteration";
+import { valueIteration as valueIteration } from "../src/ADP/valueIteration";
 import { greedyPolicy } from "../src/Baseline/greedy";
 import { randomPolicy } from "../src/Baseline/random";
 import { Graph } from "../src/Graph/graph";

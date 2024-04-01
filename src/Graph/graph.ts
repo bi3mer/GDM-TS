@@ -93,7 +93,7 @@ export class Graph {
   // THis will break if there is an error, on purpose.
   removeEdge(srcNode: string, tgtNode: string) {
     const src = this.nodes[srcNode];
-    const index = srcNode.indexOf(tgtNode);
+    const index = src.neighbors.indexOf(tgtNode);
     src.neighbors.splice(index, 1);
     delete this.edges[`${srcNode},${tgtNode}`];
   }

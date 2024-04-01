@@ -90,7 +90,6 @@ export class Graph {
     this.addEdge(new Edge(srcName, tgtName, p));
   }
 
-  // THis will break if there is an error, on purpose.
   removeEdge(srcNode: string, tgtNode: string) {
     const src = this.nodes[srcNode];
     const index = src.neighbors.indexOf(tgtNode);

@@ -42,7 +42,7 @@ export function createRandomPolicy(G: Graph): Policy {
   const pi: Policy = {};
   for (const n in G.nodes) {
     if (!G.getNode(n).isTerminal) {
-      pi[n] = G.neighbors(n);
+      pi[n] = [...G.neighbors(n)]; // shallow copy
     }
   }
   return pi;

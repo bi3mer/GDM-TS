@@ -3,13 +3,13 @@ import { Graph } from '../Graph/graph';
 import type { Policy } from '../policy';
 
 export function greedyPolicy(G: Graph): Policy {
-  const pi: { [key: string]: string } = {};
+  const pi: Policy = {};
   for (const node of Object.values(G.nodes)) {
     if (node.isTerminal) {
       continue;
     }
 
-    let bestNeighbor: string | null = null;
+    let bestNeighbor: string[] = [];
     let bestReward = -Infinity;
 
     const neighbors = node.neighbors;
@@ -19,13 +19,16 @@ export function greedyPolicy(G: Graph): Policy {
       const name = neighbors[i];
       const r = G.reward(name);
 
-      if (r > bestReward) {
+      if (r === bestReward) {
+        bestNeighbor.push(name);
+      } else if (r > bestReward) {
         bestReward = r;
-        bestNeighbor = name;
+        bestNeighbor.length = 0; // clears the array
+        bestNeighbor.push(name);
       }
     }
 
-    pi[node.name] = bestNeighbor!;
+    pi[node.name] = bestNeighbor;
   }
 
   return pi;

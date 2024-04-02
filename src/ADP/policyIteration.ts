@@ -1,7 +1,8 @@
 
 import { Graph } from "../Graph/graph";
 import type { Policy } from "../policy";
-import { calculateUtility, calculateMaxUtility, createRandomPolicy, resetUtility } from "../util";
+import { choice } from "../rand";
+import { calculateUtility, calculateMaxUtility, createRandomPolicy, resetUtility, createPolicy } from "../util";
 
 
 function modifiedInPlacePolicyEvaluation(G: Graph, pi: Policy, gamma: number, policyK: number): void {
@@ -9,7 +10,7 @@ function modifiedInPlacePolicyEvaluation(G: Graph, pi: Policy, gamma: number, po
     for (const n in G.nodes) {
       const node = G.getNode(n);
       if (!node.isTerminal) {
-        node.utility = calculateUtility(G, n, pi[n], gamma);
+        node.utility = calculateUtility(G, n, choice(pi[n]), gamma);
       }
     }
   }
@@ -20,7 +21,7 @@ function modifiedPolicyEvaluation(G: Graph, pi: Policy, gamma: number, policyK: 
     const uTemp: Record<string, number> = {};
     for (const n in G.nodes) {
       if (!G.getNode(n).isTerminal) {
-        uTemp[n] = calculateUtility(G, n, pi[n], gamma);
+        uTemp[n] = calculateUtility(G, n, choice(pi[n]), gamma);
       }
     }
     G.setNodeUtilities(uTemp);
@@ -58,14 +59,18 @@ function policyImprovement(G: Graph, pi: Policy, gamma: number): boolean {
 
     for (const np of G.neighbors(n)) {
       const up = calculateUtility(G, n, np, gamma);
-      if (up > bestU) {
+      
+      if (up === bestU) {
+        bestS
+      } else if (up > bestU) {
         bestS = np;
         bestU = up;
       }
     }
 
-    if (pi[n] !== bestS) {
-      pi[n] = bestS!;
+    if (choice(pi[n]) !== bestS) {
+      pi[n].length = 0;
+      pi[n].push(bestS!);
       changed = true;
     }
   }
@@ -107,6 +112,8 @@ export function policyIteration(
   policyEval(G, pi, gamma, policyK);
   policyImprovement(G, pi, gamma);
 
-  return pi;
+  // You would usually return the already made policy, but I need to remake it
+  // because I'm returning an array of neighbor states with equivalent utility.
+  return createPolicy(G, gamma); 
 }
 

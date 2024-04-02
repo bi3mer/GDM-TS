@@ -39,10 +39,10 @@ export function resetUtility(G: Graph): void {
 }
 
 export function createRandomPolicy(G: Graph): Policy {
-  const pi: { [n: string]: string } = {};
+  const pi: Policy = {};
   for (const n in G.nodes) {
     if (!G.getNode(n).isTerminal) {
-      pi[n] = choice(G.neighbors(n));
+      pi[n] = G.neighbors(n);
     }
   }
   return pi;
@@ -56,13 +56,16 @@ export function createPolicy(G: Graph, gamma: number): Policy {
     }
 
     let bestU = -Infinity;
-    let bestN: string = "";
+    let bestN: string[] = [];
 
     for (const np of G.neighbors(n)) {
       const u = calculateUtility(G, n, np, gamma);
-      if (u > bestU) {
+      if (u === bestU) {
+        bestN.push(np);
+      } else if (u > bestU) {
         bestU = u;
-        bestN = np;
+        bestN.length = 0; // clear the array
+        bestN.push(np);
       }
     }
 
@@ -81,7 +84,7 @@ export function runPolicy(G: Graph, start: string, pi: Policy, maxSteps: number)
       break;
     }
 
-    let tgtState = pi[curState];
+    let tgtState = choice(pi[curState]);
     let p = Math.random();
 
     for (const [nextState, probability] of G.getEdge(curState, tgtState).probability) {

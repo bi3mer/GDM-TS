@@ -2,7 +2,12 @@ import { Graph } from "./Graph/graph";
 import type { Policy } from "./policy";
 import { choice } from "./rand";
 
-export function calculateUtility(G: Graph, src: string, tgt: string, gamma: number): number {
+export function calculateUtility(
+  G: Graph,
+  src: string,
+  tgt: string,
+  gamma: number,
+): number {
   const P = G.getEdge(src, tgt).probability;
   const size = P.length;
   let sum = 0;
@@ -15,7 +20,11 @@ export function calculateUtility(G: Graph, src: string, tgt: string, gamma: numb
   return sum;
 }
 
-export function calculateMaxUtility(G: Graph, n: string, gamma: number): number {
+export function calculateMaxUtility(
+  G: Graph,
+  n: string,
+  gamma: number,
+): number {
   const node = G.getNode(n);
   if (node.isTerminal) {
     return 0;
@@ -75,7 +84,12 @@ export function createPolicy(G: Graph, gamma: number): Policy {
   return pi;
 }
 
-export function runPolicy(G: Graph, start: string, pi: Policy, maxSteps: number): [string[], number[]] {
+export function runPolicy(
+  G: Graph,
+  start: string,
+  pi: Policy,
+  maxSteps: number,
+): [string[], number[]] {
   const states: string[] = [start];
   const rewards: number[] = [G.nodes[start].reward];
   let curState = start;
@@ -87,7 +101,8 @@ export function runPolicy(G: Graph, start: string, pi: Policy, maxSteps: number)
     let tgtState = choice(pi[curState]);
     let p = Math.random();
 
-    for (const [nextState, probability] of G.getEdge(curState, tgtState).probability) {
+    for (const [nextState, probability] of G.getEdge(curState, tgtState)
+      .probability) {
       if (p <= probability) {
         tgtState = nextState;
         break;
@@ -103,4 +118,3 @@ export function runPolicy(G: Graph, start: string, pi: Policy, maxSteps: number)
 
   return [states, rewards];
 }
-

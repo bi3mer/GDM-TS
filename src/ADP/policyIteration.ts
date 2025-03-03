@@ -1,11 +1,20 @@
-
 import { Graph } from "../Graph/graph";
 import type { Policy } from "../policy";
 import { choice } from "../rand";
-import { calculateUtility, calculateMaxUtility, createRandomPolicy, resetUtility, createPolicy } from "../util";
+import {
+  calculateUtility,
+  calculateMaxUtility,
+  createRandomPolicy,
+  resetUtility,
+  createPolicy,
+} from "../util";
 
-
-function modifiedInPlacePolicyEvaluation(G: Graph, pi: Policy, gamma: number, policyK: number): void {
+function modifiedInPlacePolicyEvaluation(
+  G: Graph,
+  pi: Policy,
+  gamma: number,
+  policyK: number,
+): void {
   for (let i = 0; i < policyK; ++i) {
     for (const n in G.nodes) {
       const node = G.getNode(n);
@@ -16,7 +25,12 @@ function modifiedInPlacePolicyEvaluation(G: Graph, pi: Policy, gamma: number, po
   }
 }
 
-function modifiedPolicyEvaluation(G: Graph, pi: Policy, gamma: number, policyK: number): void {
+function modifiedPolicyEvaluation(
+  G: Graph,
+  pi: Policy,
+  gamma: number,
+  policyK: number,
+): void {
   for (let i = 0; i < policyK; ++i) {
     const uTemp: Record<string, number> = {};
     for (const n in G.nodes) {
@@ -28,7 +42,12 @@ function modifiedPolicyEvaluation(G: Graph, pi: Policy, gamma: number, policyK: 
   }
 }
 
-function inPlacePolicyEvaluation(G: Graph, _: any, gamma: number, policyK: number): void {
+function inPlacePolicyEvaluation(
+  G: Graph,
+  _: any,
+  gamma: number,
+  policyK: number,
+): void {
   for (let i = 0; i < policyK; ++i) {
     for (const n in G.nodes) {
       G.getNode(n).utility = calculateMaxUtility(G, n, gamma);
@@ -36,7 +55,12 @@ function inPlacePolicyEvaluation(G: Graph, _: any, gamma: number, policyK: numbe
   }
 }
 
-function policyEvaluation(G: Graph, _: any, gamma: number, policyK: number): void {
+function policyEvaluation(
+  G: Graph,
+  _: any,
+  gamma: number,
+  policyK: number,
+): void {
   for (let i = 0; i < policyK; ++i) {
     const uTemp: { [key: string]: number } = {};
     for (const n in G.nodes) {
@@ -59,9 +83,9 @@ function policyImprovement(G: Graph, pi: Policy, gamma: number): boolean {
 
     for (const np of G.neighbors(n)) {
       const up = calculateUtility(G, n, np, gamma);
-      
+
       if (up === bestU) {
-        bestS
+        bestS;
       } else if (up > bestU) {
         bestS = np;
         bestU = up;
@@ -84,14 +108,19 @@ export function policyIteration(
   modified: boolean = false,
   inPlace: boolean = false,
   policyK: number = 10,
-  shouldResetUtility: boolean = true
+  shouldResetUtility: boolean = true,
 ): Policy {
   if (shouldResetUtility) {
     resetUtility(G);
   }
 
   const pi: Policy = createRandomPolicy(G);
-  let policyEval: (G: Graph, pi: Policy, gamma: number, policyK: number) => void;
+  let policyEval: (
+    G: Graph,
+    pi: Policy,
+    gamma: number,
+    policyK: number,
+  ) => void;
 
   if (modified && inPlace) {
     policyEval = modifiedInPlacePolicyEvaluation;
@@ -114,6 +143,5 @@ export function policyIteration(
 
   // You would usually return the already made policy, but I need to remake it
   // because I'm returning an array of neighbor states with equivalent utility.
-  return createPolicy(G, gamma); 
+  return createPolicy(G, gamma);
 }
-

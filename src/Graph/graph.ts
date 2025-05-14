@@ -27,12 +27,18 @@ export class Graph {
     reward: number = 1.0,
     utility: number = 0.0,
     terminal: boolean = false,
-    neighbors: string[] | null = null
+    neighbors: string[] | null = null,
   ) {
     if (neighbors == null) {
       neighbors = [];
     }
-    this.nodes[nodeName] = new Node(nodeName, reward, utility, terminal, neighbors);
+    this.nodes[nodeName] = new Node(
+      nodeName,
+      reward,
+      utility,
+      terminal,
+      neighbors,
+    );
   }
 
   removeNode(nodeName: string) {
@@ -76,6 +82,7 @@ export class Graph {
   }
 
   addEdge(edge: Edge) {
+    console.log(edge, this.nodes[edge.src]);
     this.edges[`${edge.src},${edge.tgt}`] = edge;
     const neighbors = this.nodes[edge.src].neighbors;
     if (!neighbors.includes(edge.tgt)) {
@@ -83,7 +90,11 @@ export class Graph {
     }
   }
 
-  addDefaultEdge(srcName: string, tgtName: string, p: [string, number][] | null = null) {
+  addDefaultEdge(
+    srcName: string,
+    tgtName: string,
+    p: [string, number][] | null = null,
+  ) {
     if (p == null) {
       p = [[tgtName, 1.0]];
     }
@@ -131,5 +142,3 @@ export class Graph {
     }
   }
 }
-
-

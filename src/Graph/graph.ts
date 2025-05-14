@@ -82,7 +82,6 @@ export class Graph {
   }
 
   addEdge(edge: Edge) {
-    console.log(edge, this.nodes[edge.src]);
     this.edges[`${edge.src},${edge.tgt}`] = edge;
     const neighbors = this.nodes[edge.src].neighbors;
     if (!neighbors.includes(edge.tgt)) {

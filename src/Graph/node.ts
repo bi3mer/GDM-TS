@@ -3,7 +3,7 @@ export class Node {
     public name: string,
     public reward: number,
     public utility: number,
-    public is_terminal: boolean,
+    public isTerminal: boolean,
     public neighbors: string[],
   ) {}
 }

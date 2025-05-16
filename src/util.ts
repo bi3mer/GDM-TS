@@ -68,7 +68,7 @@ export function createPolicy(G: Graph, gamma: number): Policy {
     let bestN: string[] = [];
 
     for (const np of G.neighbors(n)) {
-      const u = calculateUtility(G, n, np, gamma);
+      const u = G.getNode(np).utility;
       if (u === bestU) {
         bestN.push(np);
       } else if (u > bestU) {
